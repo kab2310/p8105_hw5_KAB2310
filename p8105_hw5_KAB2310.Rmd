@@ -5,3 +5,100 @@ date: "2024-10-01"
 output: github_document
 ---
 ## This is my submission for Homework 5.
+
+# Set up 
+```{r}
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(broom)
+```
+
+# Question 1
+# Function 
+```{r}
+shared_birthday = function(n) {
+  birthdays = sample(1:365, n, replace = TRUE)
+  return(any(duplicated(birthdays)))
+}
+```
+
+# Running function 1000 times for each group size between 2 and 50
+```{r}
+group_sizes = 2:50
+simulations = 10000
+
+results = 
+  tibble(group_size = group_sizes) |>
+  mutate(
+    output_lists = map(group_size, ~rerun(simulations, shared_birthday(.x))),
+    estimate_df = map(output_lists, ~tibble(shared_birthday = unlist(.)))
+     ) |>
+  select(-output_lists) |>
+  unnest(estimate_df) |>
+  group_by(group_size) |>
+  summarize(probability = mean(shared_birthday), .groups = 'drop')
+
+results
+```
+
+# Probability as a function (Shared Birthday) of group size
+```{r}
+results |>
+  ggplot(aes(x = group_size, y = probability)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Probability of Shared Birthday vs Group Size",
+       x = "Group Size",
+       y = "Probability of Shared Birthday") +
+  theme_minimal()
+```
+
+#Comments
+The plot demonstrates that as the group size increases, the probability of at least two people sharing a birthday rises quickly at first and then levels off as it approaches 1, highlighting a nonlinear relationship. While smaller groups show a rapid increase in the likelihood of shared birthdays, the rate of increases slows signficantly for larger group sizes (beyond 30), where the probability is approaching 1.
+
+# Question 2 
+```{r}
+n = 30
+sigma = 5
+
+sim_power = function(mu){
+  
+  tibble(
+    x = rnorm(n, mu, sigma)) |> 
+      summarize(
+        tidy(t.test(x, mu = 0, conf.level = 0.95))) |> 
+    select(estimate, p.value)
+  
+}
+
+# Generate 5000 datasets from the model
+sim_result = expand_grid(
+  mu = 0:6,
+  iter = 1:5000) |> 
+  mutate(samp_res = map(mu, sim_power)) |> 
+  unnest(samp_res)
+
+```
+# plot showing the proportion of times the null was rejected 
+```{r}
+sim_result |> 
+  group_by(mu) |> 
+  summarize(
+    power = mean(p.value < 0.05)
+  ) |> 
+  ggplot(aes(x = mu, y = power)) +
+  geom_point() +
+  geom_line()
+```
+
+# plot showing the average estimate of mu 
+```{r}
+
+```
+
+#Comments 
+
+
+
+
