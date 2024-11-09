@@ -6,7 +6,7 @@ output: github_document
 ---
 ## This is my submission for Homework 5.
 
-# Set up 
+### Set up 
 ```{r}
 library(tidyverse)
 library(dplyr)
@@ -15,46 +15,44 @@ library(broom)
 ```
 
 # Question 1
-# Function 
+#### Function 
 ```{r}
-shared_birthday = function(n) {
-  birthdays = sample(1:365, n, replace = TRUE)
-  return(any(duplicated(birthdays)))
+bday_sim = function(n) {
+  sample = sample(1:365, size = n, replace = TRUE)
+duplicates = length(unique(sample)) < n
+return(duplicates)
 }
+
+bday_sim(7)
 ```
 
-# Running function 1000 times for each group size between 2 and 50
 ```{r}
-group_sizes = 2:50
-simulations = 10000
-
-results = 
-  tibble(group_size = group_sizes) |>
-  mutate(
-    output_lists = map(group_size, ~rerun(simulations, shared_birthday(.x))),
-    estimate_df = map(output_lists, ~tibble(shared_birthday = unlist(.)))
-     ) |>
-  select(-output_lists) |>
-  unnest(estimate_df) |>
-  group_by(group_size) |>
-  summarize(probability = mean(shared_birthday), .groups = 'drop')
-
-results
+#### Running function 1000 times for each group size between 2 and 50
+bday_sim = expand_grid(
+    iter = 1:10000,
+    n = 2:50) |>
+  mutate(res = map_lgl(n, bday_sim)) |> 
+  group_by(n) |> 
+  summarize(
+    prob = mean(res)
+  )
 ```
 
-# Probability as a function (Shared Birthday) of group size
+#### Probability as a function (Shared Birthday) of group size
 ```{r}
-results |>
-  ggplot(aes(x = group_size, y = probability)) +
-  geom_line() +
+bday_sim |>
+  ggplot(aes(x = n, y = prob)) +
   geom_point() +
-  labs(title = "Probability of Shared Birthday vs Group Size",
-       x = "Group Size",
-       y = "Probability of Shared Birthday") +
+  geom_line() +
+  labs(
+    title = "Probability of Shared Birthday vs Group",
+    x = "Group Size",
+    y = "Probability"
+  ) +
   theme_minimal()
 ```
 
-#Comments
+### Comments
 The plot demonstrates that as the group size increases, the probability of at least two people sharing a birthday rises quickly at first and then levels off as it approaches 1, highlighting a nonlinear relationship. While smaller groups show a rapid increase in the likelihood of shared birthdays, the rate of increases slows signficantly for larger group sizes (beyond 30), where the probability is approaching 1.
 
 # Question 2 
@@ -80,7 +78,7 @@ sim_result = expand_grid(
   unnest(samp_res)
 
 ```
-# plot showing the proportion of times the null was rejected 
+#### plot showing the proportion of times the null was rejected 
 ```{r}
 sim_result |> 
   group_by(mu) |> 
@@ -92,13 +90,38 @@ sim_result |>
   geom_line()
 ```
 
-# plot showing the average estimate of mu 
-```{r}
+### Comments
+When the effect size, mu, increases, the power of the test also increases. This means that the likelihood of correctly rejecting the null hypothesis rises as mu deviates further from 0. 
 
+
+#### Plot showing the average estimate of mu and an overlay on the graph showing the average estimate of mu only in samples for which the null was rejected. 
+```{r}
+df1 = sim_result |> 
+  group_by(mu) |> 
+  summarize(avg = mean(estimate))  |> 
+  mutate(category = "true")
 ```
 
-#Comments 
+```{r}
+df2 = sim_result |> 
+  filter(p.value < 0.05) |> 
+  group_by(mu) |> 
+  summarize(avg = mean(estimate)) |> 
+  mutate(category = "rejected")
 
+#Combining data frames
+df <- rbind(df1, df2)
 
-
-
+#Plot 2
+ggplot(df, aes(x = mu, y = avg, color = category)) +
+  geom_point() +  
+  geom_line() +  
+  labs(
+    title = "Average Estimate by Mu",
+    x = "Mu",
+    y = "Average Estimate",
+    color = "Category"
+  ) +
+  theme_minimal()
+```
+### Comments 
