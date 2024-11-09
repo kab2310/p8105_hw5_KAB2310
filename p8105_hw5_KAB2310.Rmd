@@ -6,7 +6,7 @@ output: github_document
 ---
 ## This is my submission for Homework 5.
 
-### Set up 
+#### Set up 
 ```{r}
 library(tidyverse)
 library(dplyr)
@@ -14,7 +14,7 @@ library(readxl)
 library(broom)
 ```
 
-# Question 1
+## Question 1
 #### Function 
 ```{r}
 bday_sim = function(n) {
@@ -55,7 +55,7 @@ bday_sim |>
 ### Comments
 The plot demonstrates that as the group size increases, the probability of at least two people sharing a birthday rises quickly at first and then levels off as it approaches 1, highlighting a nonlinear relationship. While smaller groups show a rapid increase in the likelihood of shared birthdays, the rate of increases slows signficantly for larger group sizes (beyond 30), where the probability is approaching 1.
 
-# Question 2 
+## Question 2 
 ```{r}
 n = 30
 sigma = 5
@@ -78,7 +78,7 @@ sim_result = expand_grid(
   unnest(samp_res)
 
 ```
-#### plot showing the proportion of times the null was rejected 
+#### Plot showing the proportion of times the null was rejected 
 ```{r}
 sim_result |> 
   group_by(mu) |> 
