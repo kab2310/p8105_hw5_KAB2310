@@ -127,7 +127,7 @@ ggplot(df, aes(x = mu, y = avg, color = category)) +
 ### Comments 
 The sample average of 𝜇̂ across tests for which the null is rejected approximately equal to the true value of 𝜇because, when the sample is significantly different from the null distribution, we are more likely to reject the null hypothesis. However, the sample average of 𝜇 in such cases approximates the true value of 𝜇 more closely as the true value of 𝜇 increases.
  
-# Problem 3
+## Problem 3
 ```{r}
 #Read and created the city_state variable.
 homicide_df = 
