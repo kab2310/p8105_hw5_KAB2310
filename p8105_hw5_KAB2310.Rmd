@@ -1,7 +1,7 @@
 ---
 title: "p8105_hw2_KAB2310"
 author: "Kamiah Brown"
-date: "2024-10-01"
+date: "2024-11-11"
 output: github_document
 ---
 ## This is my submission for Homework 5.
@@ -149,7 +149,7 @@ homicide_sum <- homicide_df |>
 head(homicide_sum)
 ```
 
-#### Estimate the proportion of homicides that are unsolved
+#### Estimate the proportion of homicides that are unsolved for Baltimore
 ```{r}
 baltimore_homi <- homicide_sum |>
   filter(city_state == "Baltimore, MD")
@@ -177,7 +177,7 @@ cities_homi
 #I received an warning "Chi-squared approximation may be incorrect", so I modified using if/else statement and binom.test. 
 ```
 
-#Plot that shows the estimates and CIs for each city
+### Plot that shows the estimates and CIs for each city
 ```{r}
 cities_homi |>
   ggplot(aes(x = reorder(city_state, estimate), y = estimate)) +
