@@ -151,11 +151,16 @@ head(homicide_sum)
 
 #### Estimate the proportion of homicides that are unsolved
 ```{r}
-baltimore_homi <- homicide_sum |> 
-  filter(city_state == "Baltimore, MD") |>
-prop.test(x = pull(baltimore_homi, unsolved_homicides),
-  n = pull(baltimore_homi, total_homicides)
-)
+baltimore_homi <- homicide_sum |>
+  filter(city_state == "Baltimore, MD")
+prop.test(n = pull(baltimore_homi,total_homicides), 
+          x = pull(baltimore_homi,unsolved_homicides)) |>
+  broom::tidy() |>
+  select(estimate, conf.low, conf.high)
+```
+
+### Run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each
+```{r}
 
 ```
 
